@@ -1,0 +1,33 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: nestuser
+      POSTGRES_PASSWORD: nestpassword
+      POSTGRES_DB: nestdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  nest-app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://nestuser:nestpassword@postgres:5432/nestdb
+    networks:
+      - app-network
+    command: npm run start:dev
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata:
